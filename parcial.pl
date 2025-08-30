@@ -118,7 +118,7 @@ estaMotivado(Jugador):-
 
 estaMotivadoMejorado(Jugador):-
     progreso(Jugador, _, _),
-    forall(tieneVentaja(Jugador, JugadorNoVentajoso), tienePocasGanas(JugadorNoVentajoso)). % Se puede delegar mas
+    forall(tieneVentaja(Jugador, JugadorNoVentajoso), tienePocasGanas(JugadorNoVentajoso)). 
 
 tienePocasGanas(Jugador):-
     ganasDeJugar(Jugador, Ganas), 
@@ -285,4 +285,5 @@ gana(Jugador) : -
 
 
 % Hubieron otras soluciones similares que son poco extensibles, pero la mayoria tenia este problema comun de tener
+
 % un forall por cada objetivo. Lo correcto es que haya un solo forall, como el de la solucion anterior planteada.
