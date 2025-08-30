@@ -54,9 +54,8 @@ ganasDeJugar(Jugador, 0.4) :-
 
 % Hay mas respuestas posibles.
 
-% Respuestas incorrecta comun:
-% "Las funciones son un conjunto de condiciones y los predicados son datos". Es incorrecto porque confunde "funciones" con reglas y "predicados" con hechos.
-% Los hechos y reglas son predicados.
+% Respuesta incorrecta comun:
+% "Las funciones son un conjunto de condiciones y los predicados son datos". Es incorrecto porque confunde "funciones" con reglas y "predicados" con hechos. Los hechos y reglas son predicados.
 
 
 
@@ -287,3 +286,4 @@ gana(Jugador) : -
 % Hubieron otras soluciones similares que son poco extensibles, pero la mayoria tenia este problema comun de tener
 
 % un forall por cada objetivo. Lo correcto es que haya un solo forall, como el de la solucion anterior planteada.
+
