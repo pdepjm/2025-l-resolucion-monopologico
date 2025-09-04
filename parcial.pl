@@ -44,13 +44,15 @@ ganasDeJugar(Jugador, 0.4) :-
 
 % ¿Qué diferencias hay entre una función y un predicado?. 
 
-% Hay varias respuestas posibles:
+% La más evidente para el ejemplo planteado:
+% Con un único predicado, según como se lo consulta, se pueden resolver diferentes problemas. Trabajando con funciones, hay que definir una para cada caso. 
 
-% Los predicados devuelven true o false, las funciones pueden devolver cualquier tipo de dato
-% Los predicados son relaciones entre individuos, las funciones transforman una entrada en una salida
-% Con los predicados se pueden conseguir quienes hacen verdadera una relacion (inversibilidad, variables libres), con una funcion que devuelve booleano no se puede.
-% (Pensando en funciones de C) Las funciones pueden tener efecto (modificar variables), los predicados no.
-% (Pensando en diferencias entre Haskell y Prolog) En las funciones se pueden tipar los argumentos, en los predicados no. Haskell es un lenguaje tipado y prolog no.
+% Otras: 
+% Con los predicados se pueden conseguir quienes hacen verdadera una relacion (inversibilidad, variables libres), con una funcion no se puede.
+% Las funciones tienen una única respuesta (principio de unicidad), los predicados en tanto relaciones, permiten obtener múltiples respustas.
+% Un predicado como tal es siempre booleano a diferencia de las funciones que pueden ser de diferentes tipos de datos. 
+% La forma en que los predicados permiten obtener respuestas de otros tipos de datos es mediante sus parámetros, pero no como la imagen de una función.
+% El mecanimos de sustitución (reducción) de las funciones es diferente al mecanismo de evaluaión de los predicados (backtracking).
 
 % Hay mas respuestas posibles.
 
@@ -58,12 +60,10 @@ ganasDeJugar(Jugador, 0.4) :-
 % "Las funciones son un conjunto de condiciones y los predicados son datos". Es incorrecto porque confunde "funciones" con reglas y "predicados" con hechos. Los hechos y reglas son predicados.
 
 
-
-
 % ---- Parte B ----
 
 
-% Habian 4 cosas para mejorar, habia que encontrar por lo menos 3:
+% Hay 4 cosas para mejorar, habia que encontrar por lo menos 3:
 
 % Mejora 1:
 estanEmpatados(Jugador1, Jugador2):-
@@ -94,7 +94,7 @@ vaMejorMejorado(Jugador):-
     progreso(Jugador, _, _),
     forall(progreso(JugadorNoVentajoso, _), tieneVentaja(Jugador, JugadorNoVentajoso)).
 
-% Esto es mejor porque es mas declarativo/expresivo, no hay que operar con listas.
+% Esto es mejor porque es mas declarativo, no hay que complicarse operando proceduralmente con listas.
 
 
 % Mejora 3:
@@ -123,8 +123,9 @@ tienePocasGanas(Jugador):-
     ganasDeJugar(Jugador, Ganas), 
     Ganas < 0,5.
 
-% Esto es mejor porque es mas declarativo/expresivo, el forall se entiende mas rapidamente porque la logica del consecuente esta delegada
-% en un predicado cuyo nombre expresa que significa esa logica.
+% Esto es mejor porque es mas expresivo, el forall se entiende mas rapidamente 
+% porque uso un predicado cuyo nombre expresa mejor lo que significa esa logica en el dominio del problema.
+% Delega mejor, lo cual lo hace también más declarativo. 
 
 
 % Error comun: Agregar validacion de que Jugador \= Ventaja en tieneVentaja: 
@@ -135,8 +136,8 @@ tieneVentaja(Ventajoso, Jugador):-
     DineroSuperior >= DineroInferior,
     Ventajoso \= Jugador.
 
-% Esto no es una mejora porque no lo pide el enunciado, y no es necesariamente una buena practica validar 
-% que los 2 argumentos sean distintos. De hecho, agregar esta validacion hace que el predicado vaMejor deje de funcionar.
+% Esto no es una mejora en los términos de la consigna, sino un cambio en el código que altera el funcionamiento del predicado.
+% De hecho, agregar esta validacion hace que el predicado vaMejor deje de funcionar.
 
 
 
@@ -202,13 +203,13 @@ gana(Jugador) : -
 % A) Parecia andar ya que para Ana y Beto funcionaba correctamente, pero para Dani empezó a fallar. ¿Por qué?
 
 % Rta: Para Dani falla porque devuelve true, cuando deberia devolver false. Esto pasa porque dani cumplio
-% un solo objetivo, el expansionista, pero el predicado gana esta planteado como una disyuncion (un OR).
-% Por esto, con tal de que una persona cumpla solo uno de sus tipos de objetivo, ya es suficiente para
-% considerarlo ganador, cuando enrealidad deberia ganar todos sus objetivos. 
+% los objetivos de un sólo tipo, el expansionista.
+% Generalizando, la solución valida que un jugador cumpla todos sus objetivos expansionistas o cumpla todos sus objetivos coleccionistas, 
+% que es diferente a lo que pide la consigna, de cumplir todos sus objetivos, de cualqueira de los dos tipos que sean. 
+% En otras palabras, para quienes tienen objetivos de dos tipos a la vez, no funciona correctamente.
 
-% Esto no lo pedia el enunciado, pero ademas esta solucion tiene un problema de extensbilidad, porque por cada
-% nuevo objetivo que quiera agregar voy a tener que agregar una nueva clausula casi identica al predicado gana.
-
+% Ademas esta solucion tiene un problema de extensbilidad, porque por cada
+% nuevo tipo de objetivo que quiera agregar voy a tener que agregar una nueva clausula casi identica al predicado gana.
 
 % B) Nos piden implementar un nuevo tipo de objetivo, y arreglar el problema de logica del punto anterior.
 
@@ -224,7 +225,7 @@ objetivo(beto, coleccionista(cordoba)).
 objetivo(dani, coleccionista(buenosAires)).
 objetivo(dani, expansionista(3)).
 
-% Teniendo esta nueva base de conocimientos, puedo rehacer el gana\1 de una forma que soluciona el problema
+% Teniendo esta nueva base de conocimientos, puedo rehacer el gana/1 de una forma que soluciona el problema
 % y que tambien es mas extensible.
 
 gana(Jugador):-
@@ -256,12 +257,13 @@ cumplio(Jugador, superarDeuda(Herencia, Deuda)):-
 % D) ¿Qué concepto/s del paradigma lógico permitieron que agregar un nuevo tipo de objetivo sea relativamente sencillo?
 
 % Lo que permite implementar nuevos tipos de objetivos facilmente es el polimorfismo, porque lo unico necesario para hacer que el 
-% nuevo objetivo funcione es implementar el caso particular del objetivo en el predicado cumplio\2.
+% nuevo objetivo funcione es implementar el caso particular del objetivo en el predicado cumplio/2, 
+% sin tener que modificar en absoluto el predicado gana/1.
+% El uso de functores fue util para que, pattern matching mediante, sea sencillo agregar más reglas del predicado cumplio/2. 
 
 
 
 % Error comun en esta parte:
-
 
 % Arreglar el problema de logica pero no hacer una solucion mas extensible:
 
@@ -278,7 +280,7 @@ gana(Jugador) : -
         tieneObjetivoInventado(Jugador,ObjetivoColeccionista), 
         cumpleInventado(Jugador,ObjetivoColeccionista)).
 
-% Esta solucion tiene problemas de extensibilidad, tengo que agregar un nuevo forall por cada nuevo objetivo.
+% Esta solucion tiene problemas de extensibilidad y de lógica repetida, tengo que agregar un nuevo forall por cada nuevo objetivo.
 % Aunque resuelve el problema, esta solución no es correcta porque no cumple con lo que se siempre se pide en la materia,
 % que es hacer buenas (osea, mantenibles) soluciones, no solo hacer andar las cosas.
 
@@ -286,4 +288,5 @@ gana(Jugador) : -
 % Hubieron otras soluciones similares que son poco extensibles, pero la mayoria tenia este problema comun de tener
 
 % un forall por cada objetivo. Lo correcto es que haya un solo forall, como el de la solucion anterior planteada.
+
 
